@@ -28,7 +28,7 @@ function handleRequest(e) {
     const a = d.action || '';
     const k = d.apiKey || '';
     if (a === 'verify') return verifyKey(d.licenseKey, d.deviceId);
-    if (a === 'generate' && k === API_KEY) return generateKey(d.email);
+    if (a === 'generate' && k === API_KEY) return generateKey(d.email, d.ref || '');
     if (a === 'revoke' && k === API_KEY) return revokeKey(d.licenseKey);
     if (a === 'status' && k === API_KEY) return getStatus(d.licenseKey);
     return respond({ error:'Invalid action or auth' });
@@ -37,10 +37,10 @@ function handleRequest(e) {
   }
 }
 
-function generateKey(email) {
+function generateKey(email, ref) {
   const s = getSheet();
   const key = generateLicenseKey();
-  s.appendRow([key, email, 'active', new Date().toISOString(), '', '']);
+  s.appendRow([key, email, 'active', new Date().toISOString(), ref || '', '']);
   return respond({ success: true, licenseKey: key });
 }
 
