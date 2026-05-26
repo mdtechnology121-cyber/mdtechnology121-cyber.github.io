@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thank You — MD TECHNOLOGY Pro</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📥</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:rgba(255,255,255,.07);backdrop-filter:blur(24px);border-radius:32px;padding:48px 40px;max-width:520px;width:100%;border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 80px rgba(0,0,0,.4);text-align:center}
+.check{width:72px;height:72px;border-radius:50%;background:rgba(102,222,102,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px}
+h1{font-size:24px;font-weight:700;margin-bottom:4px}
+.sub{color:rgba(255,255,255,.5);font-size:14px;margin-bottom:24px}
+.key-box{background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.2);border-radius:12px;padding:20px;margin-bottom:20px;word-break:break-all}
+.key-box .label{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.key-box .key{font-size:22px;font-weight:700;letter-spacing:3px;font-family:monospace;color:#667eea}
+.actions{display:flex;gap:12px;margin-bottom:24px}
+.actions button{flex:1;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-copy{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+.btn-copy:hover{opacity:.9}
+.btn-dl{background:rgba(255,255,255,.1);color:#fff}
+.btn-dl:hover{background:rgba(255,255,255,.15)}
+.steps{text-align:left;background:rgba(255,255,255,.03);border-radius:12px;padding:16px 20px;margin-bottom:20px}
+.steps h3{font-size:14px;margin-bottom:8px;color:rgba(255,255,255,.6)}
+.steps ol{padding-left:18px}
+.steps li{font-size:13px;line-height:1.8;color:rgba(255,255,255,.5)}
+.footer{font-size:12px;color:rgba(255,255,255,.3)}
+.loading{display:none;text-align:center;padding:20px}
+.spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.1);border-top-color:#667eea;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{display:none;background:rgba(233,30,99,.12);border:1px solid rgba(233,30,99,.2);border-radius:12px;padding:16px;margin-bottom:16px;font-size:14px;color:#e91e63}
+.error a{color:#fff}
+@media(max-width:480px){.card{padding:32px 20px;border-radius:24px}.key-box .key{font-size:18px}.actions{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="check">✓</div>
+<h1>Thank You for Your Purchase!</h1>
+<p class="sub">Your license key is ready below</p>
+
+<div id="loading" class="loading">
+<div class="spinner"></div>
+<p>Generating your license key...</p>
+</div>
+
+<div id="error" class="error"></div>
+
+<div id="result" style="display:none">
+<div class="key-box">
+<div class="label">Your License Key</div>
+<div class="key" id="licenseKey">XXXX-XXXX-XXXX-XXXX</div>
+</div>
+
+<div class="actions">
+<button class="btn-copy" onclick="copyKey()">📋 Copy Key</button>
+<a class="btn-dl" href="MDTechnology-Pro.apk" download style="display:flex;align-items:center;justify-content:center;padding:12px;border-radius:12px;text-decoration:none;font-size:14px;font-weight:600;background:rgba(255,255,255,.1);color:#fff">⬇ Download APK</a>
+</div>
+
+<div class="steps">
+<h3>📱 How to activate:</h3>
+<ol>
+<li>Install the Pro APK on your Android device</li>
+<li>Open the app and paste your license key</li>
+<li>Enjoy ad-free video downloading!</li>
+</ol>
+</div>
+</div>
+
+<p class="footer">MD TECHNOLOGY · VISION BEYOND LIMITS</p>
+</div>
+
+<script>
+function getQueryParam(name) {
+  const url = new URL(window.location.href);
+  return url.searchParams.get(name) || '';
+}
+
+function copyKey() {
+  const key = document.getElementById('licenseKey').textContent;
+  navigator.clipboard.writeText(key).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy Key', 2000);
+  });
+}
+
+const email = getQueryParam('email') || 'customer@email.com';
+const scriptUrl = 'https://script.google.com/macros/s/AKfycbwxRdK1V3pKa0cTRaQ7o6fPh4CGR6ftQTQIEdY6ZWb578NW2UyEuSyZsnIyOoOYc87fSQ/exec';
+
+fetch(scriptUrl + '?action=generate&email=' + encodeURIComponent(email) + '&apiKey=mdtech-secret-2026')
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('loading').style.display = 'none';
+    if (data.success) {
+      document.getElementById('licenseKey').textContent = data.licenseKey;
+      document.getElementById('result').style.display = 'block';
+    } else {
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error').innerHTML = '❌ Failed to generate key. <a href="mailto:mdtechnology121@gmail.com">Contact support</a>';
+    }
+  })
+  .catch(() => {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error').style.display = 'block';
+    document.getElementById('error').innerHTML = '❌ Error connecting to server. <a href="mailto:mdtechnology121@gmail.com">Contact support</a>';
+  });
+</script>
+</body>
+</html>
