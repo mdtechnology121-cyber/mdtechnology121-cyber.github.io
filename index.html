@@ -74,6 +74,19 @@ section .subtitle{text-align:center;color:rgba(255,255,255,.5);font-size:15px;ma
 .step-num{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
 .step-content h3{font-size:15px;font-weight:600;margin-bottom:4px}
 .step-content p{font-size:14px;color:rgba(255,255,255,.6);line-height:1.5}
+.version-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;max-width:600px;margin:0 auto 20px}
+.version-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:32px 24px;text-align:center;transition:all .3s;position:relative}
+.version-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.version-card.pro{background:rgba(255,255,255,.08);border-color:rgba(102,126,234,.4)}
+.pro-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#667eea,#764ba2);padding:4px 16px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.version-card h3{font-size:20px;font-weight:700;margin-bottom:4px}
+.version-price{font-size:36px;font-weight:800;margin-bottom:16px;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.version-card ul{list-style:none;padding:0;margin:0 0 24px;text-align:left}
+.version-card ul li{padding:6px 0;font-size:14px;color:rgba(255,255,255,.75);border-bottom:1px solid rgba(255,255,255,.05)}
+.version-card ul li:last-child{border:none}
+.version-card .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-bottom:0}
+.version-card .btn.pro-btn{background:linear-gradient(135deg,#667eea,#764ba2);box-shadow:0 4px 20px rgba(102,126,234,.35)}
+.version-card .btn.pro-btn:hover{box-shadow:0 8px 32px rgba(102,126,234,.5)}
 .faq-grid{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
 .faq-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;transition:all .3s}
 .faq-item summary{padding:18px 20px;cursor:pointer;font-size:15px;font-weight:500;display:flex;justify-content:space-between;align-items:center;list-style:none;user-select:none}
@@ -131,8 +144,8 @@ footer .copy{font-size:12px;color:rgba(255,255,255,.3)}
 <span class="app-icon">📥</span>
 <div class="app-info">
 <h3>Instagram Video Downloader</h3>
-<p>Download Instagram reels and videos to your Android device. No login needed.</p>
-    <span class="app-badge">Available</span>
+<p>Two versions: Free (with ads) &amp; Pro (no ads). Download Instagram reels &amp; videos.</p>
+<span class="app-badge">Free / $3.99</span>
 </div>
 </a>
 <a class="app-card" href="https://github.com/mdtechnology121-cyber/MDTechnology-Android" target="_blank">
@@ -143,24 +156,50 @@ footer .copy{font-size:12px;color:rgba(255,255,255,.3)}
 <span class="app-badge">Source</span>
 </div>
 </a>
+</div>
 <a class="app-card disabled">
 <span class="app-icon">➕</span>
 <div class="app-info">
 <h3>More apps coming soon</h3>
 <p>New tools and utilities are in development. Stay tuned.</p>
 <span class="app-badge coming">Coming Soon</span>
-</div>
 </a>
-</div>
 </section>
 
-<section id="instagram-downloader">
+        <section id="instagram-downloader">
 <h2>📥 Instagram Video Downloader</h2>
-<p class="subtitle">Built for simplicity, privacy, and speed</p>
-<a class="btn" href="MDTechnology.apk" download style="margin:0 auto 36px;display:flex;width:fit-content">
-⬇ Download APK v1.0
-<span class="badge">6.3 MB</span>
+<p class="subtitle">Choose your version</p>
+<div class="version-cards">
+<div class="version-card free">
+<h3>Free</h3>
+<div class="version-price">$0</div>
+<ul>
+<li>✅ Full download features</li>
+<li>📢 Banner &amp; interstitial ads</li>
+<li>⚡ No speed limits</li>
+<li>🔒 No login required</li>
+</ul>
+<a class="btn" href="MDTechnology-Free.apk" download style="width:100%">
+⬇ Download Free
 </a>
+</div>
+<div class="version-card pro">
+<div class="pro-badge">BEST</div>
+<h3>Pro</h3>
+<div class="version-price">$3.99</div>
+<ul>
+<li>✅ Full download features</li>
+<li>🚫 No ads at all</li>
+<li>⚡ No speed limits</li>
+<li>🔒 No login required</li>
+<li>⭐ Premium support</li>
+</ul>
+<a class="btn pro-btn" href="MDTechnology-Pro.apk" download style="width:100%">
+⬇ Download Pro
+</a>
+</div>
+</div>
+<p class="subtitle" style="margin-top:40px">Built for simplicity, privacy, and speed</p>
 <div class="features-grid">
 <div class="feature-card">
 <div class="icon">🔒</div>
