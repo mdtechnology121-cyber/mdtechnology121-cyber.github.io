@@ -1,68 +1,57 @@
 const SHEET_NAME = 'LicenseKeys';
-const SS = SpreadsheetApp.getActiveSpreadsheet();
-const API_KEY = 'mdtech-secret-2026'; // Simple auth to prevent abuse
+const API_KEY = 'mdtech-secret-2026';
 
-function setupSheet() {
-  const sheet = SS.getSheetByName(SHEET_NAME);
-  if (!sheet) {
-    const newSheet = SS.insertSheet(SHEET_NAME);
-    newSheet.appendRow(['LicenseKey', 'Email', 'Status', 'Created', 'DeviceId', 'LastUsed']);
-    newSheet.setFrozenRows(1);
+function getSheet() {
+  let ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) {
+    try { ss = SpreadsheetApp.openById('1vBzAfimOCv3pdGc7SkhyVjZSOSUqeBk-9DxfkPbmjZwoac5s5yOPzTYQ'); } catch (e) {}
   }
+  if (!ss) {
+    ss = SpreadsheetApp.create('MDTechnology License Keys');
+  }
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.appendRow(['LicenseKey','Email','Status','Created','DeviceId','LastUsed']);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
 }
 
-function doGet(e) {
-  return handleRequest(e);
-}
-
-function doPost(e) {
-  return handleRequest(e);
-}
+function doGet(e) { return handleRequest(e); }
+function doPost(e) { return handleRequest(e); }
 
 function handleRequest(e) {
   try {
-    setupSheet();
-    const data = e.parameter || {};
-    const action = data.action || '';
-    const auth = data.apiKey || '';
-
-    if (action === 'verify') {
-      return verifyKey(data.licenseKey, data.deviceId);
-    }
-    if (action === 'generate' && auth === API_KEY) {
-      return generateKey(data.email);
-    }
-    if (action === 'revoke' && auth === API_KEY) {
-      return revokeKey(data.licenseKey);
-    }
-    if (action === 'status' && auth === API_KEY) {
-      return getStatus(data.licenseKey);
-    }
-
-    return respond({ error: 'Invalid action or auth' }, 400);
+    getSheet();
+    const d = e.parameter || {};
+    const a = d.action || '';
+    const k = d.apiKey || '';
+    if (a === 'verify') return verifyKey(d.licenseKey, d.deviceId);
+    if (a === 'generate' && k === API_KEY) return generateKey(d.email);
+    if (a === 'revoke' && k === API_KEY) return revokeKey(d.licenseKey);
+    if (a === 'status' && k === API_KEY) return getStatus(d.licenseKey);
+    return respond({ error:'Invalid action or auth' });
   } catch (err) {
-    return respond({ error: err.toString() }, 500);
+    return respond({ error: err.toString() });
   }
 }
 
 function generateKey(email) {
-  const sheet = SS.getSheetByName(SHEET_NAME);
+  const s = getSheet();
   const key = generateLicenseKey();
-  const now = new Date();
-  sheet.appendRow([key, email, 'active', now.toISOString(), '', '']);
+  s.appendRow([key, email, 'active', new Date().toISOString(), '', '']);
   return respond({ success: true, licenseKey: key });
 }
 
 function verifyKey(licenseKey, deviceId) {
-  const sheet = SS.getSheetByName(SHEET_NAME);
-  const data = sheet.getDataRange().getValues();
-
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] === licenseKey) {
-      if (data[i][2] === 'active') {
-        const row = i + 1;
-        sheet.getRange(row, 5).setValue(deviceId || '');
-        sheet.getRange(row, 6).setValue(new Date().toISOString());
+  const s = getSheet();
+  const d = s.getDataRange().getValues();
+  for (let i = 1; i < d.length; i++) {
+    if (d[i][0] === licenseKey) {
+      if (d[i][2] === 'active') {
+        s.getRange(i+1,5).setValue(deviceId||'');
+        s.getRange(i+1,6).setValue(new Date().toISOString());
         return respond({ valid: true });
       } else {
         return respond({ valid: false, reason: 'revoked' });
@@ -73,54 +62,45 @@ function verifyKey(licenseKey, deviceId) {
 }
 
 function revokeKey(licenseKey) {
-  const sheet = SS.getSheetByName(SHEET_NAME);
-  const data = sheet.getDataRange().getValues();
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] === licenseKey) {
-      sheet.getRange(i + 1, 3).setValue('revoked');
+  const s = getSheet();
+  const d = s.getDataRange().getValues();
+  for (let i = 1; i < d.length; i++) {
+    if (d[i][0] === licenseKey) {
+      s.getRange(i+1,3).setValue('revoked');
       return respond({ success: true });
     }
   }
-  return respond({ success: false, error: 'Key not found' });
+  return respond({ success: false, error:'Key not found' });
 }
 
 function getStatus(licenseKey) {
-  const sheet = SS.getSheetByName(SHEET_NAME);
-  const data = sheet.getDataRange().getValues();
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] === licenseKey) {
-      return respond({
-        success: true,
-        licenseKey: data[i][0],
-        email: data[i][1],
-        status: data[i][2],
-        created: data[i][3]
-      });
+  const s = getSheet();
+  const d = s.getDataRange().getValues();
+  for (let i = 1; i < d.length; i++) {
+    if (d[i][0] === licenseKey) {
+      return respond({ success:true, licenseKey:d[i][0], email:d[i][1], status:d[i][2], created:d[i][3] });
     }
   }
-  return respond({ success: false, error: 'Key not found' });
+  return respond({ success: false, error:'Key not found' });
 }
 
 function generateLicenseKey() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let key = '';
+  const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let k = '';
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
-      key += chars[Math.floor(Math.random() * chars.length)];
+      k += c[Math.floor(Math.random()*c.length)];
     }
-    if (i < 3) key += '-';
+    if (i < 3) k += '-';
   }
-  const sheet = SS.getSheetByName(SHEET_NAME);
-  const existing = sheet.getDataRange().getValues().map(r => r[0]);
-  if (existing.includes(key)) return generateLicenseKey();
-  return key;
+  const s = getSheet();
+  const existing = s.getDataRange().getValues().map(r => r[0]);
+  if (existing.includes(k)) return generateLicenseKey();
+  return k;
 }
 
-function respond(data, statusCode) {
-  const output = ContentService.createTextOutput(JSON.stringify(data));
-  output.setMimeType(ContentService.MimeType.JSON);
-  if (statusCode) {
-    const range = `ResponseCode${statusCode}`; // not directly supported, skipping
-  }
-  return output;
+function respond(data) {
+  const o = ContentService.createTextOutput(JSON.stringify(data));
+  o.setMimeType(ContentService.MimeType.JSON);
+  return o;
 }

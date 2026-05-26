@@ -87,7 +87,7 @@ function copyKey() {
 }
 
 const email = getQueryParam('email') || 'customer@email.com';
-const scriptUrl = 'https://script.google.com/macros/s/AKfycbwxRdK1V3pKa0cTRaQ7o6fPh4CGR6ftQTQIEdY6ZWb578NW2UyEuSyZsnIyOoOYc87fSQ/exec';
+const scriptUrl = 'https://script.google.com/macros/s/AKfycbx-4NMLXChOErZ2fHURt5KpyMWyPKOT4CooJMq92YJBXIHTA_gXh4aXdv_6P24Ry-kkYg/exec';
 
 fetch(scriptUrl + '?action=generate&email=' + encodeURIComponent(email) + '&apiKey=mdtech-secret-2026')
   .then(r => r.json())
