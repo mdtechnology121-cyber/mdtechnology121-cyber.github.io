@@ -219,7 +219,23 @@ function getGumroadKey() {
     return;
   }
   alert.style.display = 'none';
-  generateLicense(email, 'gumroad-' + email);
+  const url = API_URL + '?action=lookup&email=' + encodeURIComponent(email) + '&apiKey=mdtech-secret-2026';
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      if (data.success && data.keys && data.keys.length > 0) {
+        document.getElementById('licenseKeyDisplay').textContent = data.keys[0].licenseKey;
+        document.getElementById('mainCard').style.display = 'none';
+        document.getElementById('successCard').style.display = 'block';
+      } else {
+        alert.textContent = '❌ No license key found for this email. Bought on Gumroad? Contact mdtechnology121@gmail.com';
+        alert.style.display = 'block';
+      }
+    })
+    .catch(() => {
+      alert.textContent = '❌ Network error. Email mdtechnology121@gmail.com for help.';
+      alert.style.display = 'block';
+    });
 }
 
 function copyLicense() {
