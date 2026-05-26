@@ -24,17 +24,63 @@ function doPost(e) { return handleRequest(e); }
 function handleRequest(e) {
   try {
     getSheet();
-    const d = e.parameter || {};
-    const a = d.action || '';
-    const k = d.apiKey || '';
-    if (a === 'verify') return verifyKey(d.licenseKey, d.deviceId);
-    if (a === 'generate' && k === API_KEY) return generateKey(d.email, d.ref || '');
-    if (a === 'revoke' && k === API_KEY) return revokeKey(d.licenseKey);
-    if (a === 'status' && k === API_KEY) return getStatus(d.licenseKey);
+    const a = e.parameter.action || '';
+    const k = e.parameter.apiKey || '';
+    if (a === 'verify') return verifyKey(e.parameter.licenseKey, e.parameter.deviceId);
+    if (a === 'generate' && k === API_KEY) return generateKey(e.parameter.email, e.parameter.ref || '');
+    if (a === 'revoke' && k === API_KEY) return revokeKey(e.parameter.licenseKey);
+    if (a === 'status' && k === API_KEY) return getStatus(e.parameter.licenseKey);
+    if (a === 'lookup' && k === API_KEY) return lookupKeyByEmail(e.parameter.email);
+    if (a === 'gumroadWebhook' && k === API_KEY) return handleGumroadWebhook(e);
     return respond({ error:'Invalid action or auth' });
   } catch (err) {
     return respond({ error: err.toString() });
   }
+}
+
+function handleGumroadWebhook(e) {
+  try {
+    let data;
+    if (e.postData && e.postData.contents) {
+      data = JSON.parse(e.postData.contents);
+    } else {
+      data = e.parameter;
+    }
+    const licenseKey = data.license_key || data.licenseKey || '';
+    const email = data.buyer_email || data.email || '';
+    if (!licenseKey || !email) {
+      Logger.log('Gumroad webhook missing data: ' + JSON.stringify(data));
+      return respond({ success: false, error: 'Missing license_key or buyer_email' });
+    }
+    const s = getSheet();
+    const existing = s.getDataRange().getValues();
+    for (let i = 1; i < existing.length; i++) {
+      if (existing[i][0] === licenseKey) {
+        return respond({ success: true, message: 'Key already exists' });
+      }
+    }
+    s.appendRow([licenseKey, email, 'active', new Date().toISOString(), 'gumroad', '']);
+    return respond({ success: true, message: 'Key stored from Gumroad' });
+  } catch (err) {
+    Logger.log('Gumroad webhook error: ' + err.toString());
+    return respond({ success: false, error: err.toString() });
+  }
+}
+
+function lookupKeyByEmail(email) {
+  if (!email) return respond({ success: false, error: 'Email required' });
+  const s = getSheet();
+  const d = s.getDataRange().getValues();
+  const keys = [];
+  for (let i = 1; i < d.length; i++) {
+    if (d[i][1] === email && d[i][2] === 'active') {
+      keys.push({ licenseKey: d[i][0], created: d[i][3] });
+    }
+  }
+  if (keys.length > 0) {
+    return respond({ success: true, keys: keys });
+  }
+  return respond({ success: false, error: 'No active keys found for this email' });
 }
 
 function generateKey(email, ref) {
